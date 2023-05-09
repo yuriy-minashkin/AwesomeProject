@@ -1,6 +1,4 @@
-import React from "react";
-import { useFonts } from "expo-font";
-import BackGroundImage from "../assets/images/back-ground.png";
+import React, { useState } from "react";
 import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
@@ -8,46 +6,78 @@ import {
   StyleSheet,
   Text,
   View,
-  ImageBackground,
   TextInput,
   TouchableOpacity,
 } from "react-native";
 
 export const LoginScreen = () => {
-  const [fontsLoaded] = useFonts({
-    RobotoMedium: require("../assets/fonts/Roboto-Medium.ttf"),
-    RobotoRegular: require("../assets/fonts/Roboto-Regular.ttf"),
-  });
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+  };
+
+  const onLogin = () => {
+    console.log(`email: ${email}, password: ${password}`);
+    keyboardHide();
+    resetForm();
+  };
+
+  const keyboardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={BackGroundImage} style={styles.bgImage}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={-12}
-            style={styles.form}
+    <View>
+      <TouchableWithoutFeedback onPress={keyboardHide}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={-12}
+        >
+          <View
+            style={{
+              ...styles.form,
+              marginBottom: isShowKeyboard ? 25 : 0,
+            }}
           >
             <Text style={styles.title}>Sign in</Text>
             <View style={styles.inputWrapper}>
-              <TextInput style={styles.input} placeholder="Email address" />
-              <TextInput style={styles.input} placeholder="Password" />
+              <TextInput
+                style={styles.input}
+                placeholder="Email address"
+                onFocus={() => setIsShowKeyboard(true)}
+                onChangeText={setEmail}
+                autoComplete="email"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry={true}
+                onFocus={() => setIsShowKeyboard(true)}
+                value={password}
+                onChangeText={setPassword}
+                autoComplete="password"
+              />
               <Text style={styles.showPassText}> Show </Text>
             </View>
 
-            <TouchableOpacity style={styles.button} title="Create account">
+            <TouchableOpacity
+              style={styles.button}
+              title="Sign in"
+              onPress={onLogin}
+            >
               <Text style={styles.buttonText}>Sign in</Text>
             </TouchableOpacity>
             <Text style={styles.signInText}>
               Don't have an account? Create account
             </Text>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      </ImageBackground>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
